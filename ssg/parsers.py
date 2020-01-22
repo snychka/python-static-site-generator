@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 
 from markdown import markdown
-
+from docutils.core import publish_parts
 
 class Parser:
     extensions = []
@@ -36,6 +36,13 @@ class MarkdownParser(Parser):
         content = markdown(self.read(path))
         self.write(path, dest, content)
 
+class ReStructuredTextParser(Parser):
+
+    extensions = ['.rst']
+
+    def parse(self, path, dest):
+        content = publish_parts(self.read(path), writer_name='html5')
+        self.write(path, dest, content['html_body'])
 
 class ResourceParser(Parser):
 

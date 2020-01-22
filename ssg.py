@@ -17,7 +17,8 @@ config = {
     'dest': 'dist',
     'parsers': [
         ssg.parsers.MarkdownParser(),
-        ssg.parsers.ResourceParser()
+        ssg.parsers.ReStructuredTextParser(),
+        ssg.parsers.ResourceParser(),
     ]
 }
 
