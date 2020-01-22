@@ -13,13 +13,13 @@ parser.add_argument('--dest', '-d', metavar='DEST', default=None, help='Build pa
 args = parser.parse_args()
 
 config = {
-    'source': 'content',
-    'dest': 'dist',
     'parsers': [
         ssg.parsers.MarkdownParser(),
         ssg.parsers.ReStructuredTextParser(),
         ssg.parsers.ResourceParser(),
     ]
 }
+config['source'] = args.source or 'content'
+config['dest'] = args.dest or 'dist'
 
 Site(**config).build()
