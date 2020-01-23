@@ -8,6 +8,7 @@ from docutils.core import publish_parts
 
 
 class Parser:
+
     extensions = []
 
     def valid_extension(self, extension):
