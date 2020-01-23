@@ -1,3 +1,8 @@
++++
+type: page
+title: Example Page
++++
+
 Title
 =====
 
