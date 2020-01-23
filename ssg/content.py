@@ -9,8 +9,9 @@ class Frontmatter:
 
     @classmethod
     def load(cls, string):
-        _, fm, content = cls._regex.split(string)
-        return yaml.load(fm, Loader=yaml.FullLoader), content
+        _, fm, content = cls._regex.split(string, 2)
+        metadata = yaml.load(fm, Loader=yaml.FullLoader)
+        return metadata, content
 
 class Content:
     pass
