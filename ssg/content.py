@@ -23,7 +23,7 @@ class Frontmatter:
         elif type == 'post':
             return Post(type, title, content, date, author)
         else:
-            return Content(type, title, content)
+            return Content('plain', title, content)
 
 class Content:
 
@@ -59,6 +59,8 @@ class Content:
     def content(self, content):
         self._content = content
 
+    # TODO Add __repr__
+
 
 class Page(Content):
 
@@ -76,6 +78,8 @@ class Page(Content):
     @slug.setter
     def slug(self, slug):
         self._slug = slug
+
+    # TODO Add __repr__
 
 class Post(Content):
 
@@ -102,3 +106,5 @@ class Post(Content):
     @author.setter
     def author(self, author):
         self._author = author
+
+    # TODO Add __repr__
