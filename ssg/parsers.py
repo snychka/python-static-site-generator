@@ -7,6 +7,7 @@ from markdown import markdown
 from docutils.core import publish_parts
 from ssg.content import Frontmatter, Content, Page, Post
 
+
 class Parser:
 
     extensions = []
