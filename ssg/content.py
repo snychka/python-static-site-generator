@@ -60,15 +60,15 @@ class Content:
         self._content = content
 
     def __repr__(self):
-        return 'Title: {}\nType: {}'.format(self._title, self._type)
+        return 'Title: {}\nType: {}\n'.format(self._title, self._type)
 
 
 class Page(Content):
 
     count = 0
 
-    def __init__(self, md_type, title, content, slug):
-        super().__init__(md_type, title, content)
+    def __init__(self, type, title, content, slug):
+        super().__init__(type, title, content)
         self._slug = slug
         Page.count += 1
 
@@ -81,7 +81,7 @@ class Page(Content):
         self._slug = slug
 
     def __repr__(self):
-         return '{}\nSlug: {}'.format(super().__repr__(), self._slug)
+         return '{}Slug: {}\n'.format(super().__repr__(), self._slug)
 
 class Post(Content):
 
@@ -110,4 +110,4 @@ class Post(Content):
         self._author = author
 
     def __repr__(self):
-        return '{}\nDate: {}\nAuthor: {}'.format(super().__repr__(), self._date, self._author)
+        return '{}Date: {}\nAuthor: {}\n'.format(super().__repr__(), self._date, self._author)
