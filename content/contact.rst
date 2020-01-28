@@ -1,7 +1,7 @@
 +++
 type: page
-title: Example Page
-slug: about
+title: Contact
+slug: contact
 +++
 
 Title
