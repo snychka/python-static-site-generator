@@ -24,11 +24,14 @@ def get_source_code(filename):
     with open(file_path.resolve(), 'r') as source_code:
         return RedBaron(source_code.read())
 
-def handlers_code():
-    return get_source_code('handlers.py')
+def content_code():
+    return get_source_code('content.py')
 
-def auth_code():
-    return get_source_code('auth.py', True)
+def parsers_code():
+    return get_source_code('parsers.py')
+
+def site_code():
+    return get_source_code('site.py')
 
 def rq(string):
     return re.sub(r'(\'|")', '', str(string))
