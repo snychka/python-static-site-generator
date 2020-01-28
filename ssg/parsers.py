@@ -37,7 +37,6 @@ class MarkdownParser(Parser):
 
     def parse(self, path, source, dest):
         content = Frontmatter.load(self.read(path))
-        print(content)
         html = markdown(content.content)
         self.write(path, dest, html)
 
