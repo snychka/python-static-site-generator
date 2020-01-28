@@ -1,6 +1,7 @@
 +++
 type: page
 title: Example Page
+slug: about
 +++
 
 Title

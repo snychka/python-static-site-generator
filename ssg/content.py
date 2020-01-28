@@ -59,7 +59,8 @@ class Content:
     def content(self, content):
         self._content = content
 
-    # TODO Add __repr__
+    def __repr__(self):
+        return 'Title: {}\nType: {}'.format(self._title, self._type)
 
 
 class Page(Content):
@@ -79,7 +80,8 @@ class Page(Content):
     def slug(self, slug):
         self._slug = slug
 
-    # TODO Add __repr__
+    def __repr__(self):
+         return '{}\nSlug: {}'.format(super().__repr__(), self._slug)
 
 class Post(Content):
 
@@ -107,4 +109,5 @@ class Post(Content):
     def author(self, author):
         self._author = author
 
-    # TODO Add __repr__
+    def __repr__(self):
+        return '{}\nDate: {}\nAuthor: {}'.format(super().__repr__(), self._date, self._author)
