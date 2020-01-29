@@ -4,12 +4,12 @@ import yaml
 
 class Frontmatter:
 
-    _delimiter = r'^(?:-|\+){3}\s*$'
-    _regex = re.compile(_delimiter, re.MULTILINE)
+    __delimiter = r'^(?:-|\+){3}\s*$'
+    __regex = re.compile(__delimiter, re.MULTILINE)
 
     @classmethod
     def load(cls, string):
-        _, fm, content = cls._regex.split(string, 2)
+        _, fm, content = cls.__regex.split(string, 2)
         metadata = yaml.load(fm, Loader=yaml.FullLoader)
 
         type = metadata.get('type', '')
