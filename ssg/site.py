@@ -1,3 +1,5 @@
+import sys
+
 from pathlib import Path
 
 
@@ -26,7 +28,7 @@ class Site:
         if parser is not None:
             parser.parse(path, self.source, self.dest)
         else:
-            print('Error')
+            self.error('There is no parser for the `{}` extension, file skipped!'.format(path.suffix))
 
     def build(self):
         self.create_root()
@@ -35,3 +37,7 @@ class Site:
                 self.create_dir(path)
             elif path.is_file():
                 self.run_parser(path)
+
+    @staticmethod
+    def error(message, end = '\n'):
+        sys.stderr.write('\x1b[1;31m' + message.strip() + '\x1b[0m' + end)
