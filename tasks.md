@@ -28,6 +28,5 @@ Implement customized representations ✓
 Implement customized developer's text representation for an type ✓
 Implement customized user's text representation of a type ✓
 
-Implement a container
-Implement a Sized collection using the __len__() method
-Execute reverse iteration over a sequence
+Implement a container ✓
+Implement a Sized collection using the __len__() method ✓

@@ -1,6 +1,7 @@
 import re
 import yaml
 
+from collections.abc import Mapping
 
 class Frontmatter:
 
@@ -12,102 +13,40 @@ class Frontmatter:
         _, fm, content = cls.__regex.split(string, 2)
         metadata = yaml.load(fm, Loader=yaml.FullLoader)
 
-        type = metadata.get('type', '')
-        title = metadata.get('title', '')
-        slug = metadata.get('slug', '')
-        date = metadata.get('date', '')
-        author = metadata.get('author', '')
-        
-        if type == 'page':
-            return Page(type, title, content, slug)
-        elif type == 'post':
-            return Post(type, title, content, date, author)
-        else:
-            return Content('plain', title, content)
+        return Content(metadata, content)
 
-class Content:
+class Content(Mapping):
 
-    count = 0
+    def __init__(self, metadata, content):
+        self.data = metadata
+        self.data['content'] = content
 
-    def __init__(self, type, title, content):
-        self._type = type
-        self._title = title
-        self._content = content
-        Content.count += 1
+    @property
+    def body(self):
+        return self.data['content']
 
     @property
     def type(self):
-        return self._type
+        return self.data['type'] if 'type' in self.data else None
 
     @type.setter
     def type(self, type):
-        self._type = type
+        self.data['type'] = type
 
-    @property
-    def title(self):
-        return self._title
+    def __contains__(self, key):
+        return key in self.data
 
-    @title.setter
-    def title(self, title):
-        self._title = title
+    def __getitem__(self, key):
+        return self.data[key]
 
-    @property
-    def content(self):
-        return self._content
+    def __iter__(self):
+        self.data.__iter__()
 
-    @content.setter
-    def content(self, content):
-        self._content = content
+    def __len__(self):
+        return len(self.data)
 
-    def __repr__(self):
-        return 'Title: {}\nType: {}\n'.format(self._title, self._type)
-
-
-class Page(Content):
-
-    count = 0
-
-    def __init__(self, type, title, content, slug):
-        super().__init__(type, title, content)
-        self._slug = slug
-        Page.count += 1
-
-    @property
-    def slug(self):
-        return self._slug
-
-    @slug.setter
-    def slug(self, slug):
-        self._slug = slug
+    def __str__(self):
+        return str(self.data)
 
     def __repr__(self):
-         return '{}Slug: {}\n'.format(super().__repr__(), self._slug)
-
-class Post(Content):
-
-    count = 0
-
-    def __init__(self, type, title, content, date, author):
-        super().__init__(type, title, content)
-        self._date = date
-        self._author = author
-        Post.count += 1
-
-    @property
-    def date(self):
-        return self._date
-
-    @date.setter
-    def date(self, date):
-        self._date = date
-
-    @property
-    def author(self):
-        return self._author
-
-    @author.setter
-    def author(self, author):
-        self._author = author
-
-    def __repr__(self):
-        return '{}Date: {}\nAuthor: {}\n'.format(super().__repr__(), self._date, self._author)
+        return '{}'.format(self.data)
