@@ -3,7 +3,7 @@ import yaml
 
 from collections.abc import Mapping
 
-class Frontmatter:
+class Content(Mapping):
 
     __delimiter = r'^(?:-|\+){3}\s*$'
     __regex = re.compile(__delimiter, re.MULTILINE)
@@ -13,9 +13,7 @@ class Frontmatter:
         _, fm, content = cls.__regex.split(string, 2)
         metadata = yaml.load(fm, Loader=yaml.FullLoader)
 
-        return Content(metadata, content)
-
-class Content(Mapping):
+        return cls(metadata, content)
 
     def __init__(self, metadata, content):
         self.data = metadata
@@ -33,8 +31,6 @@ class Content(Mapping):
     def type(self, type):
         self.data['type'] = type
 
-    def __contains__(self, key):
-        return key in self.data
 
     def __getitem__(self, key):
         return self.data[key]
@@ -45,8 +41,10 @@ class Content(Mapping):
     def __len__(self):
         return len(self.data)
 
-    def __str__(self):
-        return str(self.data)
 
     def __repr__(self):
-        return '{}'.format(self.data)
+        data = {}
+        for key, value in self.data.items():
+            if key != 'content':
+                data[key] = value
+        return str(data)

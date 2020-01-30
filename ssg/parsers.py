@@ -5,7 +5,7 @@ from pathlib import Path
 
 from markdown import markdown
 from docutils.core import publish_parts
-from ssg.content import Frontmatter #, Content, Page, Post
+from ssg.content import Content
 
 
 class Parser:
@@ -36,7 +36,7 @@ class MarkdownParser(Parser):
     extensions = ['.md', '.markdown']
 
     def parse(self, path, source, dest):
-        content = Frontmatter.load(self.read(path))
+        content = Content.load(self.read(path))
         html = markdown(content.body)
         self.write(path, dest, html)
 
@@ -46,7 +46,7 @@ class ReStructuredTextParser(Parser):
     extensions = ['.rst']
 
     def parse(self, path, source, dest):
-        content = Frontmatter.load(self.read(path))
+        content = Content.load(self.read(path))
         html = publish_parts(content.body, writer_name='html5')
         self.write(path, dest, html['html_body'])
 
