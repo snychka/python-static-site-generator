@@ -2,8 +2,8 @@ import re
 
 import parso
 
-from bs4 import BeautifulSoup
-from jinja2 import Environment, PackageLoader, exceptions, meta, nodes
+from jinja2 import nodes
+
 from pathlib import Path
 from redbaron import RedBaron
 
@@ -77,17 +77,12 @@ def simplify(main):
     return "".join(buf)
 
 
-def get_calls(name):
-    calls = []
-    for node in parsed_content(name).find_all(nodes.Call):
-        calls.append(simplify(node))
-    return calls
-
-
 def get_imports(code, value):
     imports = code.find_all(
         "from_import",
-        lambda node: "".join(list(node.value.node_list.map(lambda node: str(node))))
+        lambda node: "".join(
+            list(node.value.node_list.map(lambda node: str(node)))
+        )
         == value,
     ).find_all("name_as_name")
     return list(imports.map(lambda node: node.value))
@@ -102,12 +97,15 @@ def get_conditional(code, values, type, nested=False):
                 str(node.second).replace("'", '"'),
             )
         elif node.type == "unitary_operator":
-            return "{}:{}".format(str(node.value), str(node.target).replace("'", '"'))
+            return "{}:{}".format(
+                str(node.value), str(node.target).replace("'", '"')
+            )
 
     nodes = code.value if nested else code
     for value in values:
         final_node = nodes.find_all(type).find(
-            ["comparison", "unitary_operator"], lambda node: flat(node) == value
+            ["comparison", "unitary_operator"], lambda node:
+            flat(node) == value
         )
         if final_node is not None:
             return final_node

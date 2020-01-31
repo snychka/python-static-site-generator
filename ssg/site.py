@@ -28,7 +28,7 @@ class Site:
             parser.parse(path, self.source, self.dest)
         else:
             self.error(
-                "There is no parser for the `{}` extension, file skipped!".format(
+                "No parser for the `{}` extension, file skipped!".format(
                     path.suffix
                 )
             )
