@@ -1,8 +1,7 @@
 import re
+import ast
 
 import parso
-
-from jinja2 import nodes
 
 from pathlib import Path
 from redbaron import RedBaron
@@ -51,7 +50,7 @@ def tqrw(string):
 
 def simplify(main):
     def _simplify(node):
-        if not isinstance(node, nodes.Node):
+        if not isinstance(node, ast.Ast):
             if isinstance(node, (type(None), bool)):
                 buf.append(repr(node))
             else:
