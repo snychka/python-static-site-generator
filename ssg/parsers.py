@@ -2,6 +2,7 @@ import os
 import shutil
 
 from pathlib import Path
+from typing import List
 
 from docutils.core import publish_parts
 from markdown import markdown
@@ -10,12 +11,12 @@ from ssg.content import Content
 
 
 class Parser:
-    extensions = []
+    extensions: List[str] = []
 
     def valid_extension(self, extension):
         return extension in self.extensions
 
-    def parse(self, path, source, dest):
+    def parse(self, path: Path, source: Path, dest: Path):
         raise NotImplementedError
 
     def read(self, path):
