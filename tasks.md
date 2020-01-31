@@ -8,7 +8,7 @@ A `Site` class will be created to read configuration variables for a simple site
 # Module 3 - Parser Classes
 
 Learners will create a `Parser` base class and several subclasses `ReStructuredTextParser`, `MarkdownParser` and `ResourceParser`.
-(Module 03 - Estimating 15 Tasks)
+(Estimating 15 Tasks)
 
 # Module 4 - Content Classes
 
