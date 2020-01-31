@@ -60,6 +60,9 @@ instance/
 .vscode
 .idea
 
+# linting
+.mypy_cache/
+
 # macOS
 .DS_Store
 
