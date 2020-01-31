@@ -3,13 +3,13 @@ import shutil
 
 from pathlib import Path
 
-from markdown import markdown
 from docutils.core import publish_parts
+from markdown import markdown
+
 from ssg.content import Content
 
 
 class Parser:
-
     extensions = []
 
     def valid_extension(self, extension):
@@ -32,7 +32,6 @@ class Parser:
 
 
 class MarkdownParser(Parser):
-
     extensions = [".md", ".markdown"]
 
     def parse(self, path, source, dest):
@@ -42,7 +41,6 @@ class MarkdownParser(Parser):
 
 
 class ReStructuredTextParser(Parser):
-
     extensions = [".rst"]
 
     def parse(self, path, source, dest):
@@ -52,7 +50,6 @@ class ReStructuredTextParser(Parser):
 
 
 class ResourceParser(Parser):
-
     extensions = [".jpg", ".png", ".gif", ".css", ".html"]
 
     def parse(self, path, source, dest):
