@@ -4,7 +4,6 @@ from pathlib import Path
 
 
 class Site:
-
     def __init__(self, source, dest, parsers=None):
         self.source = Path(source)
         self.dest = Path(dest)
@@ -28,16 +27,20 @@ class Site:
         if parser is not None:
             parser.parse(path, self.source, self.dest)
         else:
-            self.error('There is no parser for the `{}` extension, file skipped!'.format(path.suffix))
+            self.error(
+                "There is no parser for the `{}` extension, file skipped!".format(
+                    path.suffix
+                )
+            )
 
     def build(self):
         self.create_root()
-        for path in self.source.rglob('*'):
+        for path in self.source.rglob("*"):
             if path.is_dir():
                 self.create_dir(path)
             elif path.is_file():
                 self.run_parser(path)
 
     @staticmethod
-    def error(message, end = '\n'):
-        sys.stderr.write('\x1b[1;31m' + message.strip() + '\x1b[0m' + end)
+    def error(message, end="\n"):
+        sys.stderr.write("\x1b[1;31m" + message.strip() + "\x1b[0m" + end)
