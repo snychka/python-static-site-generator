@@ -1,6 +1,10 @@
 docutils==0.16
 Markdown==3.1.1
 parso==0.6.0
+pytest==5.3.5
+pytest-json-report==1.2.1
+pytest-metadata==1.8.0
+pytest-sugar==0.9.2
 PyYAML==5.3
 redbaron==0.9.2
 typer==0.0.8

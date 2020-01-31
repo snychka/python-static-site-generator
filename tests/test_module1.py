@@ -2,8 +2,9 @@ import pytest
 
 
 @pytest.mark.test_placeholder_module1
-def test_placeholder1_module1():
-    pass
+def test_placeholder1_module1(get_source_code):
+    print(get_source_code("content.py"))
+    assert False
 
 
 @pytest.mark.test_placeholder_module1
