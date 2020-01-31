@@ -33,4 +33,4 @@ A base class will then be created for `Content`. Then three to four sub-classes 
 ---
 
 * Implement a container ✓
-* Implement a Sized collection using the __len__() method ✓
+* Implement a Sized collection using the \_\_len\_\_() method ✓
