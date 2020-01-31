@@ -20,13 +20,17 @@ A base class will then be created for `Content`. Then three to four sub-classes 
 * Produce classes using the Python object model ✓
 * Implement a class hierarchy using inheritance ✓
 * Implement naming of an attribute by prefixing an attribute with a double-underscore causes ✓
-* Implement static methods which depend neither on class nor instance objects
+* Implement static methods which depend neither on class nor instance objects ✓
 * Implement class methods which depend on the class object, but not the instance object ✓
 * Implement properties with getters, setters, and deleters ✓
+
+---
 
 * Implement customized representations ✓
 * Implement customized developer's text representation for an type ✓
 * Implement customized user's text representation of a type ✓
+
+---
 
 * Implement a container ✓
 * Implement a Sized collection using the __len__() method ✓
