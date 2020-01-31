@@ -1,7 +1,7 @@
-# Module 1 - Site Class
+# Module 1 - CLI
 The learner will build a CLI that will set configuration variables. (Estimating 10 Tasks)
 
-# Module 2 - CLI
+# Module 2 - Site Class
 
 A `Site` class will be created to read configuration variables for a simple site. (Estimating 10 Tasks)
 
@@ -10,7 +10,7 @@ A `Site` class will be created to read configuration variables for a simple site
 Learners will create a `Parser` base class and several subclasses `ReStructuredTextParser`, `MarkdownParser` and `ResourceParser`.
 (Estimating 15 Tasks)
 
-# Module 4 - Content Classes
+# Module 4 - Content Class
 
 Learners will create a `Content` class. Which will inherit from the Abstract Base Class `Mapping`. (Estimating 15 Tasks)
 
