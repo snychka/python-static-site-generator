@@ -2,9 +2,10 @@ import pytest
 
 
 @pytest.mark.test_path_import_module1
-def test_path_import_module1(get_source_code):
+def test_path_import_module1(content):
     # from pathlib import Path
-    pass
+    print(content)
+    assert False
 
 
 @pytest.mark.test_site_class_module1
@@ -12,7 +13,7 @@ def test_site_class_module1():
     # class Site:
     #     def __init__(self, source, dest):
     #         self.source = Path(source)
-    #         self.dest = Path(dest)path_import
+    #         self.dest = Path(dest)
     pass
 
 

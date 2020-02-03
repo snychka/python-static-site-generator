@@ -7,30 +7,51 @@ import pytest
 from pathlib import Path
 from redbaron import RedBaron
 
-@pytest.fixture
-def get_source_code():
 
-    def _loader(filename):
+def get_source_code(filename, ssg=True):
+
+    if ssg:
         file_path = Path.cwd() / "ssg" / filename
-        grammar = parso.load_grammar()
-        module = grammar.parse(path=file_path.resolve())
-        parse_error = len(grammar.iter_errors(module)) == 0
+    else:
+        file_path = Path.cwd() / filename
 
-        try:
-            error_message = grammar.iter_errors(module)[0].message
-            error_start_pos = grammar.iter_errors(module)[0].start_pos[0]
-        except IndexError:
-            error_message = ""
-            error_start_pos = ""
-        message = "{} on or around line {} in `{}`.".format(
-            error_message, error_start_pos, file_path.name
-        )
-        assert parse_error, message
+    grammar = parso.load_grammar()
+    module = grammar.parse(path=file_path.resolve())
+    parse_error = len(grammar.iter_errors(module)) == 0
 
-        with open(file_path.resolve(), "r") as source_code:
-            return RedBaron(source_code.read())
+    try:
+        error_message = grammar.iter_errors(module)[0].message
+        error_start_pos = grammar.iter_errors(module)[0].start_pos[0]
+    except IndexError:
+        error_message = ""
+        error_start_pos = ""
+    message = "{} on or around line {} in `{}`.".format(
+        error_message, error_start_pos, file_path.name
+    )
+    assert parse_error, message
 
-    return _loader
+    with open(file_path.resolve(), "r") as source_code:
+        return RedBaron(source_code.read())
+
+
+@pytest.fixture
+def content():
+    return get_source_code('content.py')
+
+
+@pytest.fixture
+def parsers():
+    return get_source_code('parsers.py')
+
+
+@pytest.fixture
+def site():
+    return get_source_code('site.py')
+
+
+@pytest.fixture
+def ssg():
+    return get_source_code('ssg.py', False)
 
 
 # def rq(string):
