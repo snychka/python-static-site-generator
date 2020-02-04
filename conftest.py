@@ -28,10 +28,11 @@ def get_source_code(filename, ssg=True):
     message = "{} on or around line {} in `{}`.".format(
         error_message, error_start_pos, file_path.name
     )
-    assert parse_error, message
-
-    with open(file_path.resolve(), "r") as source_code:
-        return RedBaron(source_code.read())
+    if parse_error:
+        with open(file_path.resolve(), "r") as source_code:
+            return { "success": parse_error, "message": '', "code": RedBaron(source_code.read()) }
+    else:
+        return { "success": parse_error, "message": message, "code": "" }
 
 
 @pytest.fixture
@@ -53,6 +54,31 @@ def site():
 def ssg():
     return get_source_code('ssg.py', False)
 
+
+@pytest.fixture()
+def get_imports():
+    def _get_imports(code, value):
+        imports = code.find_all(
+            "from_import",
+            lambda node: "".join(
+                list(node.value.node_list.map(lambda node: str(node)))
+            )
+            == value,
+        ).find_all("name_as_name")
+        return list(imports.map(lambda node: node.value))
+
+    return _get_imports
+
+
+# def get_imports(code, value):
+#     imports = code.find_all(
+#         "from_import",
+#         lambda node: "".join(
+#             list(node.value.node_list.map(lambda node: str(node)))
+#         )
+#         == value,
+#     ).find_all("name_as_name")
+#     return list(imports.map(lambda node: node.value))
 
 # def rq(string):
 #     return re.sub(r'(\'|")', "", str(string))
