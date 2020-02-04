@@ -30,9 +30,9 @@ def get_source_code(filename, ssg=True):
     )
     if parse_error:
         with open(file_path.resolve(), "r") as source_code:
-            return { "success": parse_error, "message": '', "code": RedBaron(source_code.read()) }
+            return parse_error, "", RedBaron(source_code.read())
     else:
-        return { "success": parse_error, "message": message, "code": "" }
+        return parse_error, message, ""
 
 
 @pytest.fixture
@@ -55,7 +55,7 @@ def ssg():
     return get_source_code('ssg.py', False)
 
 
-@pytest.fixture()
+@pytest.fixture
 def get_imports():
     def _get_imports(code, value):
         imports = code.find_all(
@@ -70,15 +70,15 @@ def get_imports():
     return _get_imports
 
 
-# def get_imports(code, value):
-#     imports = code.find_all(
-#         "from_import",
-#         lambda node: "".join(
-#             list(node.value.node_list.map(lambda node: str(node)))
-#         )
-#         == value,
-#     ).find_all("name_as_name")
-#     return list(imports.map(lambda node: node.value))
+@pytest.fixture
+def get_by_name():
+    def _get_by_name(code, type, name):
+        item = code.find_all(type, lambda node: node.name == name)
+
+        return (True, item[0]) if len(item) > 0 else (False, [])
+
+    return _get_by_name
+
 
 # def rq(string):
 #     return re.sub(r'(\'|")', "", str(string))
@@ -115,16 +115,6 @@ def get_imports():
 #     _simplify(main)
 #     return "".join(buf)
 
-# @pytest.fixture
-# def get_imports(code, value):
-#     imports = code.find_all(
-#         "from_import",
-#         lambda node: "".join(
-#             list(node.value.node_list.map(lambda node: str(node)))
-#         )
-#         == value,
-#     ).find_all("name_as_name")
-#     return list(imports.map(lambda node: node.value))
 
 # @pytest.fixture
 # def get_conditional(code, values, type, nested=False):
