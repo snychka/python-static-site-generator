@@ -6,59 +6,53 @@ import pytest
 
 from pathlib import Path
 from redbaron import RedBaron
+from redbaron.utils import indent
 
 
-def get_source_code(filename, ssg=True):
+class Parser:
+    def __init__(self, filename):
+        self.code = ""
+        self.message = ""
 
-    if ssg:
-        file_path = Path.cwd() / "ssg" / filename
-    else:
-        file_path = Path.cwd() / filename
-
-    grammar = parso.load_grammar()
-    module = grammar.parse(path=file_path.resolve())
-    parse_error = len(grammar.iter_errors(module)) == 0
-
-    try:
-        error_message = grammar.iter_errors(module)[0].message
-        error_start_pos = grammar.iter_errors(module)[0].start_pos[0]
-    except IndexError:
         error_message = ""
         error_start_pos = ""
-    message = "{} on or around line {} in `{}`.".format(
-        error_message, error_start_pos, file_path.name
-    )
-    if parse_error:
-        with open(file_path.resolve(), "r") as source_code:
-            return parse_error, "", RedBaron(source_code.read())
-    else:
-        return parse_error, message, ""
 
+        if filename == "ssg":
+            file_path = Path.cwd() / "ssg.py"
+        else:
+            file_path = Path.cwd() / "ssg" / "{}.py".format(filename)
 
-@pytest.fixture
-def content():
-    return get_source_code('content.py')
+        grammar = parso.load_grammar()
+        module = grammar.parse(path=file_path.resolve())
+        self.success = len(grammar.iter_errors(module)) == 0
 
+        if self.success:
+            with open(file_path.resolve(), "r") as source_code:
+               self.code = RedBaron(source_code.read())
+        else:
+            error_message = grammar.iter_errors(module)[0].message
+            error_start_pos = grammar.iter_errors(module)[0].start_pos[0]
+            self.message = "{} on or around line {} in `{}`.".format(
+                error_message, error_start_pos, file_path.name
+            )
 
-@pytest.fixture
-def parsers():
-    return get_source_code('parsers.py')
+    def get_by_name(self, type, name, code=None):
+        if code is None:
+            item = self.code.find_all(type, lambda node: node.name == name)
+        else:
+            item = code.find_all(type, lambda node: node.name == name)
 
+        return (True, item[0]) if len(item) > 0 else (False, [])
 
-@pytest.fixture
-def site():
-    return get_source_code('site.py')
+    def get_by_value(self, type, value, code=None):
+        if code is None:
+            item = self.code.find_all(type, lambda node: str(node.target) == value)
+        else:
+            item = code.find_all(type, lambda node: str(node.target) == value)
+        return (True, item[0]) if len(item) > 0 else (False, [])
 
-
-@pytest.fixture
-def ssg():
-    return get_source_code('ssg.py', False)
-
-
-@pytest.fixture
-def get_imports():
-    def _get_imports(code, value):
-        imports = code.find_all(
+    def get_imports(self, value):
+        imports = self.code.find_all(
             "from_import",
             lambda node: "".join(
                 list(node.value.node_list.map(lambda node: str(node)))
@@ -67,75 +61,34 @@ def get_imports():
         ).find_all("name_as_name")
         return list(imports.map(lambda node: node.value))
 
-    return _get_imports
+    def get_conditional(self, values, type, nested=False):
+        def flat(node):
+            if node.type == "comparison":
+                return "{}:{}:{}".format(
+                    str(node.first).replace("'", '"'),
+                    str(node.value).replace(" ", ":"),
+                    str(node.second).replace("'", '"'),
+                )
+            elif node.type == "unitary_operator":
+                return "{}:{}".format(
+                    str(node.value), str(node.target).replace("'", '"')
+                )
+
+        nodes = self.code.value if nested else self.code
+        for value in values:
+            final_node = nodes.find_all(type).find(
+                ["comparison", "unitary_operator"], lambda node:
+                flat(node) == value
+            )
+            if final_node is not None:
+                return final_node
+        return None
 
 
 @pytest.fixture
-def get_by_name():
-    def _get_by_name(code, type, name):
-        item = code.find_all(type, lambda node: node.name == name)
+def parse():
 
-        return (True, item[0]) if len(item) > 0 else (False, [])
+    def _parse(filename):
+        return Parser(filename)
 
-    return _get_by_name
-
-
-# def rq(string):
-#     return re.sub(r'(\'|")', "", str(string))
-
-
-# def tqrw(string):
-#     return str(string).replace("'", '"').replace(" ", "")
-
-
-# def simplify(main):
-#     def _simplify(node):
-#         if not isinstance(node, ast.Ast):
-#             if isinstance(node, (type(None), bool)):
-#                 buf.append(repr(node))
-#             else:
-#                 buf.append(node)
-#             return
-
-#         for idx, field in enumerate(node.fields):
-#             value = getattr(node, field)
-#             if value == "load" or value == "store":
-#                 return
-#             if idx:
-#                 buf.append(".")
-#             if isinstance(value, list):
-#                 for idx, item in enumerate(value):
-#                     if idx:
-#                         buf.append(".")
-#                     _simplify(item)
-#             else:
-#                 _simplify(value)
-
-#     buf = []
-#     _simplify(main)
-#     return "".join(buf)
-
-
-# @pytest.fixture
-# def get_conditional(code, values, type, nested=False):
-#     def flat(node):
-#         if node.type == "comparison":
-#             return "{}:{}:{}".format(
-#                 str(node.first).replace("'", '"'),
-#                 str(node.value).replace(" ", ":"),
-#                 str(node.second).replace("'", '"'),
-#             )
-#         elif node.type == "unitary_operator":
-#             return "{}:{}".format(
-#                 str(node.value), str(node.target).replace("'", '"')
-#             )
-
-#     nodes = code.value if nested else code
-#     for value in values:
-#         final_node = nodes.find_all(type).find(
-#             ["comparison", "unitary_operator"], lambda node:
-#             flat(node) == value
-#         )
-#         if final_node is not None:
-#             return final_node
-#     return None
+    return _parse
