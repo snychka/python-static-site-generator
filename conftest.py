@@ -9,6 +9,13 @@ from redbaron import RedBaron
 from redbaron.utils import indent
 
 
+class SourceCode:
+
+    def __init__(self, exists, code):
+        self.exists = exists
+        self.code = code
+
+
 class Parser:
     def __init__(self, filename):
         self.code = ""
@@ -42,14 +49,14 @@ class Parser:
         else:
             item = code.find_all(type, lambda node: node.name == name)
 
-        return (True, item[0]) if len(item) > 0 else (False, [])
+        return SourceCode(True, item[0]) if len(item) > 0 else SourceCode(False, [])
 
     def get_by_value(self, type, value, code=None):
         if code is None:
             item = self.code.find_all(type, lambda node: str(node.target) == value)
         else:
             item = code.find_all(type, lambda node: str(node.target) == value)
-        return (True, item[0]) if len(item) > 0 else (False, [])
+        return SourceCode(True, item[0]) if len(item) > 0 else SourceCode(False, [])
 
     def get_imports(self, value):
         imports = self.code.find_all(
