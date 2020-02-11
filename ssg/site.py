@@ -24,9 +24,7 @@ class Site:
             parser.parse(path, self.source, self.dest)
         else:
             self.error(
-                "No parser for the `{}` extension, file skipped!".format(
-                    path.suffix
-                )
+                "No parser for the `{}` extension, file skipped!".format(path.suffix)
             )
 
     def build(self):

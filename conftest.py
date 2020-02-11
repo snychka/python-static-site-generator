@@ -10,7 +10,6 @@ from redbaron.utils import indent
 
 
 class SourceCode:
-
     def __init__(self, exists, code):
         self.exists = exists
         self.code = code
@@ -35,7 +34,7 @@ class Parser:
 
         if self.success:
             with open(file_path.resolve(), "r") as source_code:
-               self.code = RedBaron(source_code.read())
+                self.code = RedBaron(source_code.read())
         else:
             error_message = grammar.iter_errors(module)[0].message
             error_start_pos = grammar.iter_errors(module)[0].start_pos[0]
@@ -51,6 +50,15 @@ class Parser:
 
         return SourceCode(True, item[0]) if len(item) > 0 else SourceCode(False, [])
 
+    def get_args(self, code):
+        return list(
+            code.find_all("call_argument").map(
+                lambda node: str(node.target)
+                + ":"
+                + str(node.value.value).replace("'", '"')
+            )
+        )
+
     def get_by_value(self, type, value, code=None):
         if code is None:
             item = self.code.find_all(type, lambda node: str(node.target) == value)
@@ -58,15 +66,39 @@ class Parser:
             item = code.find_all(type, lambda node: str(node.target) == value)
         return SourceCode(True, item[0]) if len(item) > 0 else SourceCode(False, [])
 
-    def get_imports(self, value):
+    def get_imports(self):
+        imports = []
+        self.code.find_all(
+            "import",
+            lambda node: node.find_all(
+                "dotted_as_name", lambda node: imports.append(str(node))
+            ),
+        )
+        return imports
+
+    def get_from_import(self, value):
         imports = self.code.find_all(
             "from_import",
-            lambda node: "".join(
-                list(node.value.node_list.map(lambda node: str(node)))
-            )
+            lambda node: "".join(list(node.value.node_list.map(lambda node: str(node))))
             == value,
         ).find_all("name_as_name")
         return list(imports.map(lambda node: node.value))
+
+    def flatten(self, dictionary):
+        def _flatten(node):
+            trimmed = re.sub(r"\"|'", "", node.key.value)
+            flattened = []
+            if node.value.type is "list":
+                for item in node.value.node_list:
+                    if item.type is not "comma":
+                        flattened.append("{}:{}".format(trimmed, str(item)))
+            else:
+                flattened.append("{}:{}".format(trimmed, node.value.value))
+
+            return flattened
+
+        items = list(dictionary.find_all("dictitem").map(lambda node: _flatten(node)))
+        return [item for sublist in items for item in sublist]
 
     def get_conditional(self, values, type, nested=False):
         def flat(node):
@@ -84,8 +116,7 @@ class Parser:
         nodes = self.code.value if nested else self.code
         for value in values:
             final_node = nodes.find_all(type).find(
-                ["comparison", "unitary_operator"], lambda node:
-                flat(node) == value
+                ["comparison", "unitary_operator"], lambda node: flat(node) == value
             )
             if final_node is not None:
                 return final_node
@@ -94,7 +125,6 @@ class Parser:
 
 @pytest.fixture
 def parse():
-
     def _parse(filename):
         return Parser(filename)
 
