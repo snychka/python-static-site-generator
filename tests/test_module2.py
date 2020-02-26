@@ -149,24 +149,31 @@ def test_parser_read_function_module2(parse):
     path_arg = parsers.get_by_value("def_argument", "path", read.code)
     assert path_arg.exists, "Does the `read` method have a `path` argument?"
 
-    read_with = read.code.with_ is not None
-    assert read_with, "Do you have a `with` statement in the `read` method?"
+    with_exists = read.code.with_ is not None
+    assert with_exists, "Do you have a `with` statement in the `read` method?"
 
-    with_context = read.code.with_.contexts[0]
-    with_context_exist = with_context.as_.value == "file"
+    open_call = parsers.get_call("open", read.code.with_)
+    assert open_call.exists, "Do you have a call to `open` in your `with` statement?"
 
-    open_call = with_context.find(
-        "atomtrailers",
-        lambda node: node.value[0].value == "open"
-        and node.value[1].type == "call"
-        and node.value[1].value[0].value == "path"
-        and node.value[1].value[1].value.value.replace("'", '"') == '"r"',
+    open_args = parsers.get_args(open_call.code)
+    
+    args_exist = (
+        "None:path" in open_args
+        and 'None:"r"' in open_args
     )
+    assert args_exist, "Are you passing `open` the correct arguments?"
 
-    read_return = read.code.with_.return_
-    read_return_exists = read_return is not None
+    with_as = read.code.with_context_item.as_.value == "file"
+    assert with_as, "Does your `with ` have and `as file` statement?"
 
-    assert False
+    return_read_call = read.code.with_.return_.find(
+        "atomtrailers",
+        lambda node: node[0].value == "file"
+        and node[1].value == "read"
+        and node[2].type == "call",
+    ) is not None
+
+    assert return_read_call, "Are you return a call to `read()` on `file`?"
 
 
 """

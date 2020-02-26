@@ -190,10 +190,10 @@ def test_site_build_function_module1(parse):
 
     mkdir_call = build.code.find(
         "atomtrailers",
-        lambda node: node.value[0].value == "self"
-        and node.value[1].value == "dest"
-        and node.value[2].value == "mkdir"
-        and node.value[3].type == "call",
+        lambda node: node[0].value == "self"
+        and node[1].value == "dest"
+        and node[2].value == "mkdir"
+        and node[3].type == "call",
     )
     mkdir_call_exist = mkdir_call is not None
     assert mkdir_call_exist, "Are you calling `mkdir()` on `self.dest`?"
@@ -244,9 +244,9 @@ def test_site_path_rglob_module1(parse):
 
     if_is_dir = for_loop.if_.find(
         "atomtrailers",
-        lambda node: node.value[0].value == "path"
-        and node.value[1].value == "is_dir"
-        and node.value[2].type == "call",
+        lambda node: node[0].value == "path"
+        and node[1].value == "is_dir"
+        and node[2].type == "call",
     )
     if_is_dir_exist = if_is_dir is not None
     assert (
@@ -260,9 +260,9 @@ def test_site_path_rglob_module1(parse):
         for_loop.if_.value[0].find(
             "atomtrailers",
             lambda node: node.value[0].value == "self"
-            and node.value[1].value == "create_dir"
-            and node.value[2].type == "call"
-            and node.value[2].value[0].value.value == "path",
+            and node[1].value == "create_dir"
+            and node[2].type == "call"
+            and node[2].value[0].value.value == "path",
         )
         is not None
     )
@@ -351,11 +351,11 @@ def test_ssg_build_call_module1(parse):
     build_call = main.code.find(
         "atomtrailers",
         lambda node: node.value[0].value == "Site"
-        and node.value[1].type == "call"
-        and node.value[1].value[0].type == "dict_argument"
-        and node.value[1].value[0].value.value == "config"
-        and node.value[2].value == "build"
-        and node.value[3].type == "call",
+        and node[1].type == "call"
+        and node[1].value[0].type == "dict_argument"
+        and node[1].value[0].value.value == "config"
+        and node[2].value == "build"
+        and node[3].type == "call",
     )
     build_call_exists = build_call is not None
     assert (
@@ -373,10 +373,10 @@ def test_ssg_typer_run_module1(parse):
 
     run_call = ssg.code.find(
         "atomtrailers",
-        lambda node: node.value[0].value == "typer"
-        and node.value[1].value == "run"
-        and node.value[2].type == "call"
-        and node.value[2].value[0].value.value == "main",
+        lambda node: node[0].value == "typer"
+        and node[1].value == "run"
+        and node[2].type == "call"
+        and node[2].value[0].value.value == "main",
     )
     run_call_exist = run_call is not None
     assert run_call_exist, "Are you calling `run()` on `typer` and passing in `main`?"
