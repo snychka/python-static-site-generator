@@ -1,3 +1,5 @@
+import re
+
 import pytest
 
 
@@ -341,26 +343,86 @@ def test_parser_resource_class_module2(parse):
     inheriting = resource_parser_class.code.inherit_from.name.value == "Parser"
     assert inheriting, "Is `ResourceParser` a sub-class of the `Parser` class?"
 
-    parse = parsers.get_by_name("def", "parse", resource_parser_class.code)
-    assert parse.exists, "Have you created a method called `parse` in the `ResourceParser` class?"
-
     extensions = parsers.get_by_value("assignment", "extensions", resource_parser_class.code)
     assert ( 
         extensions.exists
     ), "Have you created a variable called `extensions` and assigned it a list of extensions?"
 
-    # TODO: Check for the right extensions
+    ext_list = extensions.code.list_
+    ext_list_exists = ext_list is not None and len(ext_list) == 5
+    assert (
+        ext_list_exists
+    ), "Have you created a variable called `extensions` and assigned it a list of extensions?"
 
-    # TODO: check is copy is being called in the parse method
+    ext_values = list(ext_list.find_all("string").map(lambda node: re.sub("\"|'", "", node.value)))
+    ext_values.sort()
 
-    assert False
+    ext_values_exist = ext_values == ['.css', '.gif', '.html', '.jpg', '.png']
+    assert (
+        ext_values_exist
+    ), "Does the `extensions` variable have the correct extensions?"
 
-"""
+    parse = parsers.get_by_name("def", "parse", resource_parser_class.code)
+    assert parse.exists, "Have you created a method called `parse` in the `ResourceParser` class?"
+
+    self_arg = parsers.get_by_value("def_argument", "self", parse.code)
+    assert self_arg.exists, "Does the `parse` method have a `self` argument?"
+
+    path_arg = parsers.get_by_value("def_argument", "path", parse.code)
+    assert path_arg.exists, "Does the `parse` method have a `path` argument?"
+
+    source_arg = parsers.get_by_value("def_argument", "source", parse.code)
+    assert source_arg.exists, "Does the `parse` method have a `source` argument?"
+
+    dest_arg = parsers.get_by_value("def_argument", "dest", parse.code)
+    assert dest_arg.exists, "Does the `parse` method have a `dest` argument?"
+
+    parse_call = parse.code.find(
+        "atomtrailers",
+        lambda node: node[0].value == "self"
+        and node[1].value == "copy"
+        and node[2].type == "call"
+        and node[2].value[0].name.value == "path"
+        and node[2].value[1].name.value == "source"
+        and node[2].value[2].name.value == "dest",
+    )
+
+
 @pytest.mark.test_site_parsers_module2
 def test_site_parsers_module2(parse):
     # , parsers=None
     # self.parsers = parsers or []
-    assert False
+
+    site = parse("site")
+    assert site.success, site.message
+
+    site_class = site.get_by_name("class", "Site")
+
+    assert (
+        site_class.exists
+    ), "Have you created a class called `Site` in the `site.py` file?"
+
+    init_def = site.get_by_name("def", "__init__", site_class.code)
+    assert init_def.exists, "Does the class `Site` have an `__init__` method?"
+
+    parsers_arg = site.get_by_value("def_argument", "parsers", init_def.code)
+    assert parsers_arg.exists, "Does the `__init__` method have a `parsers` argument?"
+
+    default_value = parsers_arg.code.value.name.value == "None"
+    assert default_value, "Is the `parsers` argument set to `None`?"
+
+    self_parsers = site.get_by_value("assignment", "self.parsers", init_def.code)
+    assert self_parsers.exists, "Are you assigning the correct value to `self.parsers`?"
+
+    right = self_parsers.code.boolean_operator
+
+    parsers_correct = (
+        right.value == "or"
+        and right.first.name.value == "parsers"
+        and right.second.type == "list"
+        and len(right.second.value) == 0
+    )
+    assert parsers_correct, "Are you setting `self.parsers` to `parsers` or `[]`?"
 
 
 @pytest.mark.test_ssg_config_parser_module2
@@ -371,7 +433,7 @@ def test_ssg_config_parser_module2(parse):
     # ],
     assert False
 
-
+"""
 @pytest.mark.test_site_load_parser_module2
 def test_site_load_parser_module2(parse):
     # def load_parser(self, extension):
