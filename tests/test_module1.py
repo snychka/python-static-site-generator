@@ -117,18 +117,10 @@ def test_site_create_dir_function_module1(parse):
     second_exist = (
         directory_path[0].second[0].value == "path"
         and directory_path[0].second[1].value == "relative_to"
+        and str(directory_path.find("call_argument").value) == "self.source"
     )
-    assert (
-        second_exist
-    ), "Are you assigning the correct path to `directory`? The second part path should be a call to `path.relative_to()`."
 
-    call_argument_exists = (
-        len(second.find_all("call_argument")) == 1
-        and str(second.find_all("call_argument")[0]) == "self.source"
-    )
-    assert (
-        call_argument_exists
-    ), "Are you passing `self.source` to `path.relative_to()`?"
+    assert second_exist, "Are you passing `self.source` to `path.relative_to()`?"
 
 
 @pytest.mark.test_site_create_dir_mkdir_module1
@@ -327,11 +319,11 @@ def test_ssg_main_command_module1(parse):
     ), "Are you assigning a dictionary to a variable named `config` in the `main` function?"
 
     source_kv = "source:source" in config_dict
-    dest_kv = "dest:dest" in config_dict
     assert (
         source_kv
     ), 'Does the `config` dictionary have a `"source": source` key value pair?'
 
+    dest_kv = "dest:dest" in config_dict
     assert dest_kv, 'Does the `config` dictionary have a `"dest": dest` key value pair?'
 
 
