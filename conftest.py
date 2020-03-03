@@ -57,9 +57,7 @@ class Parser:
     def get_args(self, code):
         return list(
             code.find_all("call_argument").map(
-                lambda node: str(node.target)
-                + ":"
-                + str(node.value.value).replace("'", '"')
+                lambda node: str(node.target) + ":" + str(node.value).replace("'", '"')
             )
         )
 
