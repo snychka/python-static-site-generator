@@ -5,14 +5,15 @@ author: PS Demo
 date: 01-28-2020
 ---
 
-## Blockquotes
+# Blockquotes
 
 > Blockquotes can also be nested...
 >> ...by using additional greater-than signs right next to each other...
 > > > ...or with spaces between arrows.
 
-Syntax highlighting
-``` js
+# Syntax highlighting
+
+```js
 var foo = function (bar) {
   return bar++;
 };
