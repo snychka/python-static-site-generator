@@ -3,8 +3,9 @@
 ```
 from pathlib import Path
 ```
-By default, the Werkzeug library logs each request to the console when debug mode is on. Let's disable this default log. Open the `cms/handlers.py` file, below the existing imports, import the `getLogger` method from `logging`. Below the imports, call the `getLogger()` function and pass in the log we need, `'werkzeug'`. Assign the result to a variable named `request_log`. Then, set the `disabled` property of `request_log` to `True`. _Note: Unless otherwise noted, the rest of the tasks in this module happen in the file `cms/handlers.py`._
+In this module we'll build up a `Site` Class that will set configuration values and create the root structure of our static site. We'll also create a command line tool using the `Typer` library. Since we are going to be working with paths let's import `pathlib`, which is part of the standard library.
 
+Open the `site.py` located in the `ssg` directory. At the top import `Path` from `pathlib`.
 
 ## Create a Class
 [//]:#(@pytest.mark.test_site_class_module1)
@@ -14,6 +15,8 @@ class Site:
         self.source = Path(source)
         self.dest = Path(dest)
 ```
+Below the import you just wrote, create a class called `Site`. Next, create a `Site` class constructor that accepts three arguments `self`, `source`, and `dest`.
+In the constructor wrap both `source`, and `dest` with a call to `Path()`. Assign the results of these calls to class attributes with the same names using `self`.
 
 
 ## Find Root Directory
@@ -22,6 +25,9 @@ class Site:
 def create_dir(self, path):
     directory = self.dest / path.relative_to(self.source)
 ```
+Still in the `Site` class create a method called `create_dir` that accepts two arguments `self`, and `path`.
+In the body of the `create_dir` method assign a variable called `directory` a `pathlib` path that has two parts. 
+It should start with `self.dest` and end with a `path` `relative_to` `self.source`.
 
 
 ## Make a Directory
@@ -29,6 +35,11 @@ def create_dir(self, path):
 ```
 directory.mkdir(parents=True, exist_ok=True)
 ```
+On a new line in the `create_dir` method, call the `mkdir` method on `directory`. For our scenario we want `directory` to be replaced if it exists.
+Pass the following keyword arguments to `mkdir`:
+
+  - `parents` set to `True`
+  - `exist_ok` set to `True`
 
 
 ## Make the Destination Directory
@@ -37,6 +48,11 @@ directory.mkdir(parents=True, exist_ok=True)
 def build(self):
     self.dest.mkdir(parents=True, exist_ok=True)
 ```
+Create a new method called `build` in the `Site` class. Call the `mkdir` method on `self.dest`.
+As with other `mkdir` calls, pass the following keyword arguments to `mkdir`:
+
+  - `parents` set to `True`
+  - `exist_ok` set to `True`
 
 
 ## Recreate all Paths
@@ -46,6 +62,9 @@ for path in self.source.rglob("*"):
     if path.is_dir():
         self.create_dir(path)
 ```
+Still in the `build` method, create a `for` loop that iterates through the paths of `self.source.rglob(*)`.
+Call the current iteration `path`. In the body of the `for` loop test `if` the current `path` is a directory.
+If it is a directory call the `create_dir` method of the class and pass in the current `path`.
 
 
 ## Import Typer
@@ -54,6 +73,8 @@ for path in self.source.rglob("*"):
 import typer
 from ssg.site import Site
 ```
+Lets setup the command line interface (CLI), open the `ssg.py` file in the root directory of the project.
+At the top import `typer`. Also, import the `Site` class from `ssg.site`.
 
 
 ## Configuration Options
@@ -65,6 +86,9 @@ def main(source="content", dest="dist"):
         "dest": dest
     }
 ```
+The Typer library requires a function to run that captures command line arguments.
+We'll call this function `main`. It should accept two keyword arguments, `source` with a default value of `"content"` and `dest` with a default value of `"dist"`.
+In the body of the `main` function create a dictionary called `config`. Add two key value pairs to `config`, `"source"` set to `source`, and `"dest"` set to `dest`.
 
 
 ## Build the Site
@@ -72,6 +96,7 @@ def main(source="content", dest="dist"):
 ```
 Site(**config).build()
 ```
+Still in the `main` function, create an instance of the `Site` class. The `Site` class requires that you provide two attributes `source` and `dest` when creating an instance. These are currently store in the `config` dictionary as key value pairs. Unpack these dictionary values with `**` and pass it to the `Site` instance. Finally, chain a call to the `build()` method on this instance.
 
 
 ## Run Typer
@@ -79,6 +104,7 @@ Site(**config).build()
 ```
 typer.run(main)
 ```
+At the bottom of the file, `typer.run()` the `main` function.
 
 
 ## Parser Class
@@ -89,6 +115,9 @@ from typing import List
 class Parser:
     extensions: List[str] = []
 ```
+In this module we will create a `Parser` base class that will have several functions that will help when converting Markdown and ReStructuredText to HTML.
+To start, open the `ssg/parsers.py` file. We will add a few type annotations and one requires an import. Import `List` from `typing`. Also, import `Path` from `pathlib`.
+Next, create a class called `Parser`. Create a variable called `extensions` and assign it an empty list. Annotate `extensions` with the type `List[str]`.
 
 
 ## Validate Extensions
@@ -97,6 +126,10 @@ class Parser:
 def valid_extension(self, extension):
     return extension in self.extensions
 ```
+We will need to know whether certain files have a parser. This will be done by looking at the extension.
+Create a new method in the `Parser` class called `valid_extension`. This method should accept an `extension`
+and return whether or not that `extension` is `in` the class variable `self.extensions`.
+**Hint: This method is part of the `Parser` methods so it should accept self as an argument.**
 
 
 ## Base parse method
@@ -105,7 +138,9 @@ def valid_extension(self, extension):
 def parse(self, path: Path, source: Path, dest: Path):
     raise NotImplementedError
 ```
-
+Since the `Parser` class is a base class we will create a method that will be overwritten in a Sub-class.
+Call this method `parse`, it should accept a `path`, `source`, and `dest`. Annotate each of these with the `Path` type.
+In the body `raise` the `NotImplementedError`.
 
 ## Parser read method
 [//]:#(@pytest.mark.test_parser_read_function_module2)
@@ -114,7 +149,9 @@ def read(self, path):
     with open(path, "r") as file:
         return file.read()
 ```
-
+The `Parser` class with need to be able to read the contents of a file. Create a method called `read` that accepts a `path`.
+Use a `with` statement and a call to `open()` to open `path` for reading `as` `file`.
+In the body of the `with` statement `return` a what is `read()` from `file`.
 
 ## Parser write method
 [//]:#(@pytest.mark.test_parser_write_function_module2)
@@ -122,6 +159,10 @@ def read(self, path):
 def write(self, path, dest, content, ext=".html"):
     full_path = dest / path.with_suffix(ext).name
 ```
+Still in the `Parser` class create a method called `write` that accepts the following arguments `path`, `dest`, and `content`.
+Also, add a keyword argument called `ext` with a default value of `".html"`.
+In the body of the method assign a variable called `full_path` a `pathlib` path that has two parts. 
+It should start with `dest` and end with the `name` of the `path` `with_suffix()` of `ext`.
 
 
 ## Open file for writing
@@ -130,6 +171,8 @@ def write(self, path, dest, content, ext=".html"):
 with open(full_path, "w") as file:
     file.write(content)
 ```
+Still in the `write` method use `with` and `open()` to open `path` for writing `as` `file`.
+In the body of the `with` statement `write` `content` to `file`.
 
 
 ## Parser copy method
@@ -139,6 +182,9 @@ import shutil
 def copy(self, path, source, dest):
     shutil.copy2(path, dest / path.relative_to(source))
 ```
+Move back to the top of the page and import `shutil`. We'll this use this library to copy resources to the correct location.
+Below the exiting methods in the `Parser` class create a new method called `copy`. This method should accept the following arguments `path`, `source`, and `dest`.
+Use `copy2` from `shutil` to copy the file at `path` to the root of `dest` with a second `path` `relative_to` `source`.
 
 
 ## ResourceParser subclass
@@ -150,6 +196,13 @@ class ResourceParser(Parser):
     def parse(self, path, source, dest):
         self.copy(path, source, dest)
 ```
+Create a class called `ResourceParser` that is a sub-class of `Parser`. Next, create a `Site` class constructor that accepts three arguments `self`, `source`, and `dest`.
+In the constructor wrap both `source`, and `dest` with a call to `Path()`. Assign the results of these calls to class attributes with the same names using `self`.
+Create a variable called `extensions` and assign it a list with 5 extensions, `".jpg"`, `".png"`, `".gif"`, `".css"`, and `".html"`.
+
+Implement the `parse` method in the `ResourceParser` class. It should have the same signature as in the base class.
+In the body, call the `copy` method that is part of the class because we inherited from `Parser`.
+Pass in the `path`, `source` and `dest`.
 
 
 ## Available Parsers
@@ -158,7 +211,8 @@ class ResourceParser(Parser):
 , parsers=None
 self.parsers = parsers or []
 ```
-
+Open `ssg/site.py` and add a keyword argument to the constructor called `parsers` set to `None`.
+In the body of the constructor, set a new class attribute called `parsers` to `parsers` `or` an empty list.
 
 ## Parser Configuration
 [//]:#(@pytest.mark.test_ssg_config_parser_module2)
@@ -168,6 +222,8 @@ import ssg.parsers
     ssg.parsers.ResourceParser(),
 ],
 ```
+Open `ssg.py`, at the top import `ssg.parsers`. Add a new key value pair to the `config` dictionary in the `main` function.
+The key should be `"parsers"` and the value should be a list with a single element of `ssg.parsers.ResourceParser()`.
 
 
 ## Site class load parser method
@@ -178,6 +234,9 @@ def load_parser(self, extension):
         if parser.valid_extension(extension):
             return parser
 ```
+Back in `ssg/site.py` add a new method to the `Site` class called `load_parser` below the existing methods. This method should accept an argument called `extension`.
+The first statement in the method should be a `for` loop that cycles through `self.parsers`. Call the current loop value `parser`. 
+The body should have an `if` statement that tests if `extension` is a `valid_extension`. **Hint: `parser` is an instance of the correct Parser class. So it will have a method of `valid_extension`.** Return `parser` in the `if` statement.
 
 
 ## Site class run parser method
