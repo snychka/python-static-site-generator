@@ -311,9 +311,10 @@ Next, on a new line call `load` and pass in `fm` and a keyword argument of `Load
 ```
 def __init__(self, metadata, content):
     self.data = metadata
-    self.data["content"] = content
+    self.data["content"] = Content
 ```
-Create a `Content` class constructor below the `load` method.
+Create a `Content` class constructor below the `load` method. The constructor should accept two arguments, `metadata` and `content`. Create a class attribute named `data` and assign it `metadata`.
+On a new line, add a key value pair to `self.data` of `"content"` set to `content`.
 
 
 ## Body property
@@ -323,6 +324,7 @@ Create a `Content` class constructor below the `load` method.
 def body(self):
     return self.data["content"]
 ```
+Still in the `Content` class add a class `@property` of `body` that returns `self.data["content"]`. 
 
 
 ## Type property
@@ -332,6 +334,7 @@ def body(self):
 def type(self):
     return self.data["type"] if "type" in self.data else None
 ```
+Also in the `Content` class add a class `@property` of `type` that returns `self.data["type"]` if `self.data` has a key of `type`. If that key doesn't exist then return `None`. This needs to be done with a ternary `if`. 
 
 
 ## Type setter
@@ -341,6 +344,7 @@ def type(self):
 def type(self, type):
     self.data["type"] = type
 ```
+Create a `setter` for the `type` `@property` that assigns `self.data["type"]`.
 
 
 ## Custom getitem method
@@ -349,6 +353,7 @@ def type(self, type):
 def __getitem__(self, key):
     return self.data[key]
 ```
+Let's overwrite the default `__getitem__` method so that it returns the value from `self.data[]` for the `key` that is provided.
 
 
 ## Custom iterator method
@@ -357,6 +362,7 @@ def __getitem__(self, key):
 def __iter__(self):
     self.data.__iter__()
 ```
+The `Content` class will also have a custom `__iter__` method that calls `self.data`s iterator method.
 
 
 ## Custom length method
@@ -365,6 +371,7 @@ def __iter__(self):
 def __len__(self):
     return len(self.data)
 ```
+We'll also need a custom `__len__` method that returns the length of `self.data`.
 
 
 ## Content Representation
@@ -374,7 +381,8 @@ def __repr__(self):
     data = {}
     return str(data)
 ```
-
+The final method that we will overwrite is the `__repr__` method. It will create a custom representation of `self.data`.
+Create a `__repr__` method and on the first line create an empty dictionary called `data`. Return a call to `str()` passing in `data`.
 
 ## Removing content from the Representation
 [//]:#(@pytest.mark.test_content_repr_for_loop_module3)
@@ -383,6 +391,7 @@ for key, value in self.data.items():
     if key != "content":
         data[key] = value
 ```
+We would only like the custom representation to include certain values. Loop through `self.data.items()` with a `for` loop. The current key should be called `key` and the value should be `value`. In the for loop test if `key` is not equal to `"content"`. In the `if` assign the `value` to `data[key]`.
 
 
 ## Markdown and ReStructuredText Imports
