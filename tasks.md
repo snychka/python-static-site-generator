@@ -245,6 +245,8 @@ The body should have an `if` statement that tests if `extension` is a `valid_ext
 def run_parser(self, path):
     parser = self.load_parser(path.suffix)
 ```
+Still in the `Site` class, add a new method called `run_parser`. This method should accept an argument called `path`.
+In the method call `load_parser` passing in `path.suffix`, save the result to a variable called `parser`.
 
 
 ## Call the parse method
@@ -255,6 +257,8 @@ if parser is not None:
 else:
     print('Not Implemented')
 ```
+Still in the `run_parser` method test if `parser` is not `None`. If parser is not `None` then call the `parse` method of `parser`.
+Pass in the `path` and the `Site` class attributes of `source` and `dest`. In an else print the message `Not Implemented`.
 
 
 ## Run the parser
@@ -263,7 +267,8 @@ else:
 elif path.is_file():
     self.run_parser(path)
 ```
-
+To connect everything together find the `if` statement in the `build` method. Add an `elif` that tests whether `path` is a file.
+If `path` is a file then call `run_parser` passing in `path`. **Hint: run_parser is part of the `Site` class.**
 
 ## Imports
 [//]:#(@pytest.mark.test_content_imports_module3)
@@ -274,7 +279,7 @@ from collections.abc import Mapping
 
 from yaml import load, FullLoader
 ```
-
+In this module we will extract YAML frontmatter from files in our site. We this will be done by spliting the contents of the file. This will require the use of regular expressions. Import `re` from the standard library. We will also need `Mapping` from `collections.abc`. Finally, import `load` and `FullLoader` from `yaml`.
 
 ## Content class
 [//]:#(@pytest.mark.test_content_class_module3)
