@@ -288,6 +288,7 @@ class Content(Mapping):
     __delimiter = r"^(?:-|\+){3}\s*$"
     __regex = re.compile(__delimiter, re.MULTILINE)
 ```
+Below the imports create a class called `Content`, make sure that it inherits from `Mapping`. In the new class create a class variable called `__delimeter`, assign it the raw string `"^(?:-|+){3}\s*$"`. Create another class variable called `__regex`, assign it the result of a call to `re.compile()`, pass in `__delimiter` and the constant `re.MULTILINE`.
 
 
 ## The load class method
@@ -300,6 +301,9 @@ def load(cls, string):
 
     return cls(metadata, content)
 ```
+Create a new method called `load` in the `Content` class, make it a class method with the appropriate decorator. This method should accept two arguments `cls` and `string`. 
+In the body of the `load` method call split on the `__regex` class variable passing in `string` and a depth of `2`. Assign the result of this to 3 variables `_, fm, content`.
+Next, on a new line call `load` and pass in `fm` and a keyword argument of `Loader` set to `FullLoader`. Finally, return a call to `cls()` and pass in `metadata` and `content`. 
 
 
 ## Content constructor
@@ -309,6 +313,7 @@ def __init__(self, metadata, content):
     self.data = metadata
     self.data["content"] = content
 ```
+Create a `Content` class constructor below the `load` method.
 
 
 ## Body property
