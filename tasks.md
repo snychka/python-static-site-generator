@@ -16,6 +16,7 @@ class Site:
         self.dest = Path(dest)
 ```
 Below the import you just wrote, create a class called `Site`. Next, create a `Site` class constructor that accepts three arguments `self`, `source`, and `dest`.
+
 In the constructor wrap both `source`, and `dest` with a call to `Path()`. Assign the results of these calls to class attributes with the same names using `self`.
 
 
@@ -404,7 +405,8 @@ from markdown import markdown
 
 from ssg.content import Content
 ```
-In order to convert both Markdown and ReStructuredText to HTML we need to import a few libraries. Import the following:
+In this module we will convert Markdown and ReStructuredText to HTML. 
+Import the following:
 
 - `publish_parts` from `docutils.core`
 - `markdown` from `markdown`
