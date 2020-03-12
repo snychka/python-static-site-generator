@@ -387,7 +387,7 @@ def test_site_error_call_module4(parse):
         ).map(lambda node: str(node.value).replace("'", '"'))
     )
     error_message = error_arg == [
-        '"No parser for the `{}` extension, file skipped!"',
+        '"No parser for the {} extension, file skipped!"',
         "format",
         "path",
         "suffix",

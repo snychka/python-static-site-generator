@@ -402,7 +402,12 @@ from markdown import markdown
 
 from ssg.content import Content
 ```
+In order to convert both Markdown and ReStructuredText to HTML we need to import
+a few libaries. Import the following:
 
+- `publish_parts` from `docutils.core`
+- `markdown` from `markdown`
+- `Content` from `ssg.content`
 
 ## Markdown Parser
 [//]:#(@pytest.mark.test_parser_markdown_class_module4)
@@ -410,6 +415,10 @@ from ssg.content import Content
 class MarkdownParser(Parser):
     extensions = [".md", ".markdown"]
 ```
+We have already created a `Parser` sub-class let's create another sub-class
+called `MarkdownParser`. With in the new `MarkdownParser` class create a
+variable called `extensions`. This should be assigned a list with the extensions
+`.md` and `.markdown`.
 
 
 ## Markdown parse method
@@ -418,6 +427,9 @@ class MarkdownParser(Parser):
 def parse(self, path, source, dest):
     content = Content.load(self.read(path))
 ```
+Implement the `parse` method in the `MarkdownParser` class. It should have the same signature as in the base class.
+In the body, call the `Content.load` class method and pass in a call to
+`self.read()` and to that pass `path`. Assign the result to a varaible called `content`.
 
 
 ## Converting markdown to html
@@ -426,7 +438,9 @@ def parse(self, path, source, dest):
 html = markdown(content.body)
 self.write(path, dest, html)
 ```
-
+In the body of the `parse` method call the `markdown` method and pass in
+`content.body`. Assign the results to a variable called `html`. Use
+`self.write()` to write `html` to `path` at `dest`. 
 
 ## ReStructuredText Parser
 [//]:#(@pytest.mark.test_parser_restructuredtext_class_module4)
@@ -434,7 +448,8 @@ self.write(path, dest, html)
 class ReStructuredTextParser(Parser):
     extensions = [".rst"]
 ```
-
+Create another sub-class called `ReStructuredTextParser`. With in the new `ReStructuredTextParser` class create a
+variable called `extensions`. This should be assigned a list with the extension `.rst`.
 
 ## ReStructuredText parse method
 [//]:#(@pytest.mark.test_parser_restructuredtext_parse_module4)
@@ -442,7 +457,9 @@ class ReStructuredTextParser(Parser):
 def parse(self, path, source, dest):
     content = Content.load(self.read(path))
 ```
-
+Implement the `parse` method in the `ReStructuredTextParser` class. It should have the same signature as in the base class.
+In the body, call the `Content.load` class method and pass in a call to
+`self.read()` and to that pass `path`. Assign the result to a varaible called `content`.
 
 ## Converting ReStructuredText to html
 [//]:#(@pytest.mark.test_parser_restructuredtext_parse_write_html_module4)
@@ -450,6 +467,9 @@ def parse(self, path, source, dest):
 html = publish_parts(content.body, writer_name="html5")
 self.write(path, dest, html["html_body"])
 ```
+In the body of the `parse` method call the `publish_parts` method and pass in
+`content.body`, aslo, add a keyword argument of `writer_name` set to `"html5"`. Assign the results to a variable called `html`. Use
+`self.write()` to write the `html["html_body"]` to `path` at `dest`. 
 
 
 ## Error reporting static method
@@ -461,7 +481,13 @@ import sys
 def error(message, end="\n"):
     sys.stderr.write("\x1b[1;31m" + message.strip() + "\x1b[0m" + end)
 ```
-
+Switch over to `ssg/site.py` and at the top import `sys`. Then, below all other
+methods in the `Site` class create a static method with the `@staticmethod`
+decorator called `error`. Since this is a static method it does not need to
+accept `self` but it does need two accept two arguments `message` and `end` with
+a default value of `"\n"`. In the body of the `error` method call the
+`sys.stderr.write()` method. Pass in the string `"\x1b[1;31m"` concatenated with
+`message.strip()`, `"\x1b[0m"` and finally `end`.
 
 ## Calling the error static method
 [//]:#(@pytest.mark.test_site_error_call_module4)
@@ -472,3 +498,5 @@ self.error(
     )
 )
 ```
+Find the `run_parser` method in the `Site` class and replace the `print()` call
+with a call to `self.error()`. To it pass in the phrase `"No parser for the {} extension, file skipped!"`. Append to this string a call to `format` passing in `path.suffix`.
