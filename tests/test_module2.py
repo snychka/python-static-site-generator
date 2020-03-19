@@ -594,7 +594,8 @@ def test_site_run_parser_if_module2(parse):
     run_parser = site.get_by_name("def", "run_parser", site_class.code)
     assert run_parser.exists, "Does the class `Site` have an `run_parser` method?"
 
-    if_test = run_parser.code.if_.test
+    parser_if = run_parser.code.find("if")
+    if_test = parser_if.find("comparison")
 
     test_correct = (
         if_test.first.name.value == "parser"
@@ -606,7 +607,7 @@ def test_site_run_parser_if_module2(parse):
         test_correct
     ), "Do you have an `if` statement that tests whether `parser` is not `None`?"
 
-    parse_call = run_parser.code.find(
+    parse_call = parser_if.find(
         "atomtrailers",
         lambda node: node[0].value == "parser"
         and node[1].value == "parse"
