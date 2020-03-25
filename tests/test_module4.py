@@ -312,6 +312,31 @@ def test_parser_restructuredtext_parse_write_html_module4(parse):
     ), "Are you passing the correct arguments to `self.write()`?"
 
 
+@pytest.mark.test_ssg_parsers_array_module4
+def test_ssg_parsers_array_module4(parse):
+
+    ssg = parse("ssg")
+    assert ssg.success, ssg.message
+
+    main = ssg.get_by_name("def", "main")
+    assert (
+        main.exists
+    ), "Have you created a function called `main` in the `ssg.py` file?"
+
+    config = ssg.get_by_value("assignment", "config", main.code)
+    config_dict = ssg.flatten(config.code.value)
+
+    mp_kv = "parsers:ssg.parsers.MarkdownParser()" in config_dict
+    assert (
+        mp_kv
+    ), "Have you added `ssg.parsers.MarkdownParser()` to the `parsers` array in the `config` dictionary?"
+
+    mp_kv = "parsers:ssg.parsers.ReStructuredTextParser()" in config_dict
+    assert (
+        mp_kv
+    ), "Have you added `ssg.parsers.ReStructuredTextParser()` to the `parsers` array in the `config` dictionary?"
+
+
 @pytest.mark.test_site_staticmethod_module4
 def test_site_staticmethod_module4(parse):
     # import sys
