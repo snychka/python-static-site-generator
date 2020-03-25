@@ -321,7 +321,7 @@ def test_content_type_property_module3(parse):
 
 
 @pytest.mark.test_content_type_setter_module3
-def test_type_content_setter_module3(parse):
+def test_content_type_setter_module3(parse):
     # @type.setter
     # def type(self, type):
     #     self.data["type"] = type
