@@ -1,11 +1,13 @@
 import re
-
 import pytest
+
+import redbaron
 
 
 @pytest.mark.test_parser_base_class_module2
 def test_parser_base_class_module2(parse):
     # from typing import List
+    # from pathlib import Path
 
     # class Parser:
     #     extensions: List[str] = []
@@ -15,6 +17,9 @@ def test_parser_base_class_module2(parse):
 
     typing_import = "List" in parsers.get_from_import("typing")
     assert typing_import, "Have you imported `List` from `typing`?"
+
+    path_import = "Path" in parsers.get_from_import("pathlib")
+    assert path_import, "Have you imported `Path` from `pathlib`?"
 
     parser_class = parsers.get_by_name("class", "Parser")
 
@@ -364,6 +369,11 @@ def test_parser_resource_class_module2(parse):
         resource_parser_class.exists
     ), "Have you created a class called `ResourceParser` in the `parsers.py` file?"
 
+    resource_parser_location = isinstance(resource_parser_class.code.parent, redbaron.redbaron.RedBaron)
+    assert (
+        resource_parser_location
+    ), "Is the `ResourceParser` class declared in the correct scope?"
+
     inheriting = resource_parser_class.code.inherit_from.name.value == "Parser"
     assert inheriting, "Is `ResourceParser` a sub-class of the `Parser` class?"
 
@@ -631,8 +641,11 @@ def test_site_run_parser_if_module2(parse):
 
     else_print = run_parser.code.else_.print_ is not None
 
+    error_call = site.get_call("error", run_parser.code)
+    error_call_exists = error_call.exists and error_call.code.parent[0].value == "self"
+
     assert (
-        else_print
+        else_print or error_call_exists
     ), "Have you added an `else` statement to the `if` that prints the correct message?"
 
 

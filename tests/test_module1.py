@@ -351,8 +351,8 @@ def test_ssg_build_call_module1(parse):
     )
     build_call_exists = build_call is not None
     assert (
-        main.exists
-    ), "Are you calling the `build()` method on `Site()`? And are you passing `**config` to the `Site` instance?"
+        build_call_exists
+    ), "Are you calling the `build()` method on `Site()` in the `main` function? Are you also passing `**config` to the `Site()` instance?"
 
 
 @pytest.mark.test_ssg_typer_run_module1
