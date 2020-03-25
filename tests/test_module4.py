@@ -359,7 +359,7 @@ def test_site_staticmethod_module4(parse):
 @pytest.mark.test_site_error_call_module4
 def test_site_error_call_module4(parse):
     # self.error(
-    #     "No parser for the `{}` extension, file skipped!".format(
+    #     "No parser for the {} extension, file skipped!".format(
     #         path.suffix
     #     )
     # )

@@ -16,6 +16,9 @@ def test_parser_base_class_module2(parse):
     typing_import = "List" in parsers.get_from_import("typing")
     assert typing_import, "Have you imported `List` from `typing`?"
 
+    path_import = "Path" in parsers.get_from_import("pathlib")
+    assert path_import, "Have you imported `Path` from `pathlib`?"
+
     parser_class = parsers.get_by_name("class", "Parser")
 
     assert (
@@ -631,8 +634,23 @@ def test_site_run_parser_if_module2(parse):
 
     else_print = run_parser.code.else_.print_ is not None
 
+    error_call = site.get_call("error", run_parser.code)
+    
+    error_args = site.get_args(error_call.code)
+    error_arg = list(
+        error_call.code.call_argument.find_all(
+            ["name", "string", "binary_operator"]
+        ).map(lambda node: str(node.value).replace("'", '"'))
+    )
+    error_message = error_arg == [
+        '"No parser for the {} extension, file skipped!"',
+        "format",
+        "path",
+        "suffix",
+    ]
+
     assert (
-        else_print
+        else_print or error_message
     ), "Have you added an `else` statement to the `if` that prints the correct message?"
 
 
