@@ -641,14 +641,13 @@ def test_site_run_parser_if_module2(parse):
     else_print = run_parser.code.else_.print_ is not None
 
     error_call = site.get_call("error", run_parser.code)
-    
-    error_args = site.get_args(error_call.code)
-    error_arg = list(
+    error_call_exists = error_call.exists and error_call.code.parent[0].value == "self"
+    error_args = list(
         error_call.code.call_argument.find_all(
             ["name", "string", "binary_operator"]
         ).map(lambda node: str(node.value).replace("'", '"'))
     )
-    error_message = error_arg == [
+    error_message = error_call_exists and error_args == [
         '"No parser for the {} extension, file skipped!"',
         "format",
         "path",

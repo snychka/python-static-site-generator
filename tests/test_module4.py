@@ -14,6 +14,9 @@ def test_parser_imports_module4(parse):
     parsers = parse("parsers")
     assert parsers.success, parsers.message
 
+    sys_import = "sys" in parsers.get_imports()
+    assert sys_import, "Are you importing `sys`?"
+
     docutils_import = "publish_parts" in parsers.get_from_import("docutils.core")
     assert docutils_import, "Are you importing `publish_parts` from `docutils.core`?"
 
@@ -173,6 +176,28 @@ def test_parser_markdown_parse_write_html_module4(parse):
         args_correct
     ), "Are you passing the correct number of arguments to `self.write()`?"
 
+    stdout_write_call = parse.code.find(
+        "atomtrailers",
+        lambda node: len(node) == 4
+        and node[0].name.value == "sys"
+        and node[1].name.value == "stdout"
+        and node[2].name.value == "write",
+    )
+
+    stdout_write_args = list(
+        stdout_write_call.call_argument.find_all(["name", "string", "binary_operator"]).map(
+            lambda node: str(node.value).replace("'", '"')
+        )
+    )
+    write_message = stdout_write_args == [
+        '"\\x1b[1;32m{} converted to HTML. Metadata: {}\\n"', 
+        'format', 
+        'path', 
+        'name', 
+        'content'
+    ]
+    assert write_message, "Are you writing the correct message to the console?"
+
 
 @pytest.mark.test_parser_restructuredtext_class_module4
 def test_parser_restructuredtext_class_module4(parse):
@@ -311,6 +336,26 @@ def test_parser_restructuredtext_parse_write_html_module4(parse):
         write_args_correct
     ), "Are you passing the correct arguments to `self.write()`?"
 
+    stdout_write_call = parse.code.find(
+        "atomtrailers",
+        lambda node: len(node) == 4
+        and node[0].name.value == "sys"
+        and node[1].name.value == "stdout"
+        and node[2].name.value == "write",
+    )
+    stdout_write_args = list(
+        stdout_write_call.call_argument.find_all(["name", "string", "binary_operator"]).map(
+            lambda node: str(node.value).replace("'", '"')
+        )
+    )
+    write_message = stdout_write_args == [
+        '"\\x1b[1;32m{} converted to HTML. Metadata: {}\\n"', 
+        'format', 
+        'path', 
+        'name', 
+        'content'
+    ]
+    assert write_message, "Are you writing the correct message to the console?"
 
 @pytest.mark.test_ssg_parsers_array_module4
 def test_ssg_parsers_array_module4(parse):
@@ -342,8 +387,8 @@ def test_site_staticmethod_module4(parse):
     # import sys
 
     # @staticmethod
-    # def error(message, end="\n"):
-    #     sys.stderr.write("\x1b[1;31m" + message.strip() + "\x1b[0m" + end)
+    # def error(message):
+    #     sys.stderr.write("\x1b[1;31m{}\n".format(message))
 
     site = parse("site")
     assert site.success, site.message
@@ -367,29 +412,22 @@ def test_site_staticmethod_module4(parse):
         decorator_exists
     ), "Does the `error` method have a decorator of `@staticmethod`?"
 
-    error.code.find(
+    message_arg = site.get_by_value("def_argument", "message", error.code)
+    assert message_arg.exists, "Does the `error` method have a `message` argument?"
+
+    stderr_write_call = error.code.find(
         "atomtrailers",
         lambda node: len(node) == 4
         and node[0].name.value == "sys"
         and node[1].name.value == "stderr"
-        and node[1].name.value == "write",
+        and node[2].name.value == "write",
     )
-
-    write_arg = list(
-        error.code.call_argument.find_all(["name", "string", "binary_operator"]).map(
+    write_args = list(
+        stderr_write_call.call_argument.find_all(["name", "string", "binary_operator"]).map(
             lambda node: str(node.value).replace("'", '"')
         )
     )
-    error_message = write_arg == [
-        "+",
-        '"\\x1b[1;31m"',
-        "+",
-        "message",
-        "strip",
-        "+",
-        '"\\x1b[0m"',
-        "end",
-    ]
+    error_message = write_args == ['"\\x1b[1;31m{}\\n"', 'format', 'message']
     assert error_message, "Are you passing in the correct error message?"
 
 
@@ -417,13 +455,12 @@ def test_site_error_call_module4(parse):
     error_call_exists = error_call.exists and error_call.code.parent[0].value == "self"
     assert error_call_exists, "Are you calling `self.error()`?"
 
-    error_args = site.get_args(error_call.code)
-    error_arg = list(
+    error_args = list(
         error_call.code.call_argument.find_all(
             ["name", "string", "binary_operator"]
         ).map(lambda node: str(node.value).replace("'", '"'))
     )
-    error_message = error_arg == [
+    error_message = error_args == [
         '"No parser for the {} extension, file skipped!"',
         "format",
         "path",
