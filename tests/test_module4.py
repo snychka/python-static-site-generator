@@ -124,6 +124,7 @@ def test_parser_markdown_parse_module4(parse):
 def test_parser_markdown_parse_write_html_module4(parse):
     # html = markdown(content.body)
     # self.write(path, dest, html)
+    # sys.stdout.write("\x1b[1;32m{} converted to HTML. Metadata: {}\n".format(path.name, content))
 
     parsers = parse("parsers")
     assert parsers.success, parsers.message
@@ -294,6 +295,7 @@ def test_parser_restructuredtext_parse_module4(parse):
 def test_parser_restructuredtext_parse_write_html_module4(parse):
     # html = publish_parts(content.body, writer_name="html5")
     # self.write(path, dest, html["html_body"])
+    # sys.stdout.write("\x1b[1;32m{} converted to HTML. Metadata: {}\n".format(path.name, content))
 
     parsers = parse("parsers")
     assert parsers.success, parsers.message
