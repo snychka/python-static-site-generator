@@ -1,6 +1,7 @@
 import re
-
 import pytest
+
+import redbaron
 
 
 @pytest.mark.test_parser_base_class_module2
@@ -366,6 +367,11 @@ def test_parser_resource_class_module2(parse):
     assert (
         resource_parser_class.exists
     ), "Have you created a class called `ResourceParser` in the `parsers.py` file?"
+
+    resource_parser_location = isinstance(resource_parser_class.code.parent, redbaron.redbaron.RedBaron)
+    assert (
+        resource_parser_location
+    ), "Is the `ResourceParser` class declared in the correct scope?"
 
     inheriting = resource_parser_class.code.inherit_from.name.value == "Parser"
     assert inheriting, "Is `ResourceParser` a sub-class of the `Parser` class?"

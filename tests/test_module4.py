@@ -1,6 +1,8 @@
 import re
 import pytest
 
+import redbaron
+
 
 @pytest.mark.test_parser_imports_module4
 def test_parser_imports_module4(parse):
@@ -37,6 +39,11 @@ def test_parser_markdown_class_module4(parse):
 
     inheriting = markdown_parser_class.code.inherit_from.name.value == "Parser"
     assert inheriting, "Is `MarkdownParser` a sub-class of the `Parser` class?"
+
+    markdown_parser_location = isinstance(markdown_parser_class.code.parent, redbaron.redbaron.RedBaron)
+    assert (
+        markdown_parser_location
+    ), "Is the `MarkdownParser` class declared in the correct scope?"
 
     extensions = parsers.get_by_value(
         "assignment", "extensions", markdown_parser_class.code
@@ -182,6 +189,11 @@ def test_parser_restructuredtext_class_module4(parse):
 
     inheriting = rst_parser_class.code.inherit_from.name.value == "Parser"
     assert inheriting, "Is `ReStructuredTextParser` a sub-class of the `Parser` class?"
+
+    rst_parser_location = isinstance(rst_parser_class.code.parent, redbaron.redbaron.RedBaron)
+    assert (
+        rst_parser_location
+    ), "Is the `ReStructuredTextParser` class declared in the correct scope?"
 
     extensions = parsers.get_by_value("assignment", "extensions", rst_parser_class.code)
     assert (
