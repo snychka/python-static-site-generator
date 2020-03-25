@@ -1,68 +1,84 @@
+# Module 01 - The Site Class
+
 ## Import pathlib
+
 [//]: # (@pytest.mark.test_site_path_import_module1)
+
 ```
 from pathlib import Path
 ```
+
 In this module we'll build up a `Site` Class that will set configuration values and create the root structure of our static site. We'll also create a command line tool using the `Typer` library. Since we are going to be working with paths let's import `pathlib`, which is part of the standard library.
 
 Open the `site.py` located in the `ssg` directory. At the top import `Path` from `pathlib`.
 
 ## Create a Class
+
 [//]:#(@pytest.mark.test_site_class_module1)
+
 ```
 class Site:
     def __init__(self, source, dest):
         self.source = Path(source)
         self.dest = Path(dest)
 ```
+
 Below the import you just wrote, create a class called `Site`. Next, create a `Site` class constructor that accepts three arguments `self`, `source`, and `dest`.
 
 In the constructor wrap both `source`, and `dest` with a call to `Path()`. Assign the results of these calls to class attributes with the same names using `self`.
 
-
 ## Find Root Directory
+
 [//]:#(@pytest.mark.test_site_create_dir_function_module1)
+
 ```
 def create_dir(self, path):
     directory = self.dest / path.relative_to(self.source)
 ```
+
 Still in the `Site` class create a method called `create_dir` that accepts two arguments `self`, and `path`.
 In the body of the `create_dir` method assign a variable called `directory` a `pathlib` path that has two parts. 
 It should start with `self.dest` and end with a `path` `relative_to` `self.source`.
 
-
 ## Make a Directory
+
 [//]:#(@pytest.mark.test_site_create_dir_mkdir_module1)
+
 ```
 directory.mkdir(parents=True, exist_ok=True)
 ```
+
 On a new line in the `create_dir` method, call the `mkdir` method on `directory`. For our scenario we want `directory` to be replaced if it exists.
 Pass the following keyword arguments to `mkdir`:
 
-  - `parents` set to `True`
-  - `exist_ok` set to `True`
-
+- `parents` set to `True`
+- `exist_ok` set to `True`
 
 ## Make the Destination Directory
+
 [//]:#(@pytest.mark.test_site_build_function_module1)
+
 ```
 def build(self):
     self.dest.mkdir(parents=True, exist_ok=True)
 ```
+
 Create a new method called `build` in the `Site` class. Call the `mkdir` method on `self.dest`.
 As with other `mkdir` calls, pass the following keyword arguments to `mkdir`:
 
-  - `parents` set to `True`
-  - `exist_ok` set to `True`
-
+- `parents` set to `True`
+- `exist_ok` set to `True`
 
 ## Recreate all Paths
+
 [//]:#(@pytest.mark.test_site_path_rglob_module1)
+
 ```
 for path in self.source.rglob("*"):
     if path.is_dir():
         self.create_dir(path)
 ```
+
 Still in the `build` method, create a `for` loop that iterates through the paths of `self.source.rglob(*)`.
 Call the current iteration `path`. In the body of the `for` loop test `if` the current `path` is a directory.
 If it is a directory call the `create_dir` method of the class and pass in the current `path`.
@@ -134,11 +150,14 @@ and return whether or not that `extension` is `in` the class variable `self.exte
 
 
 ## Base parse method
+
 [//]:#(@pytest.mark.test_parser_parse_function_module2)
+
 ```
 def parse(self, path: Path, source: Path, dest: Path):
     raise NotImplementedError
 ```
+
 Since the `Parser` class is a base class we will create a method that will be overwritten in a Sub-class.
 Call this method `parse`, it should accept a `path`, `source`, and `dest`. Annotate each of these with the `Path` type.
 In the body `raise` the `NotImplementedError`.
