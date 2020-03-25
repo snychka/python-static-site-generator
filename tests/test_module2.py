@@ -7,6 +7,7 @@ import redbaron
 @pytest.mark.test_parser_base_class_module2
 def test_parser_base_class_module2(parse):
     # from typing import List
+    # from pathlib import Path
 
     # class Parser:
     #     extensions: List[str] = []
